@@ -1,0 +1,57 @@
+globalArguments:
+  - "--global.sendanonymoususage=false"
+  - "--global.checknewversion=false"
+
+additionalArguments:
+  - "--serversTransport.insecureSkipVerify=true"
+  - "--log.level=INFO"
+
+deployment:
+  enabled: true
+  replicas: 2 # match with number of workers
+  annotations: {}
+  podAnnotations: {}
+  additionalContainers: []
+  initContainers: []
+
+# nodeSelector: 
+#   worker: "true" # add these labels to your worker nodes before running - see video
+
+ports:
+  web:
+    redirections:
+      entryPoint:
+        to: websecure
+        scheme: https
+        permanent: true
+  websecure:
+    tls:
+      enabled: true
+      
+ingressRoute:
+  dashboard:
+    enabled: false
+
+providers:
+  kubernetesCRD:  # Kubernetes Custom resource definition
+    enabled: true
+    ingressClass: traefik-external
+    allowExternalNameServices: true
+  kubernetesIngress:
+    enabled: true
+    allowExternalNameServices: true
+    publishedService:
+      enabled: false
+
+rbac:   # role based access control
+  enabled: true
+
+service:
+  enabled: true
+  type: LoadBalancer
+  annotations: {}
+  labels: {}
+  spec:
+    loadBalancerIP: 192.168.0.30 # this should be an IP in the MetalLB range
+  loadBalancerSourceRanges: []
+  externalIPs: []

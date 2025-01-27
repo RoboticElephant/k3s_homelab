@@ -1,0 +1,21 @@
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: ${env.EMAIL}
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:    # What challenge type is going to be used
+      - dns01:
+          cloudflare:
+            email: ${env.EMAIL}
+            apiTokenSecretRef:
+              name: cloudflare-token-secret
+              key: cloudflare-token
+        selector:
+          dnsZones:
+            - "notthedroid.com"
